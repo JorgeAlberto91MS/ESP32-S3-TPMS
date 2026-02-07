@@ -2,6 +2,7 @@
 #include <lvgl.h>
 #include "src/esp_bsp.h"
 #include "src/display.h"
+//#include "src/bg_image.c"
 
 struct TireData {
     lv_obj_t * card;
@@ -27,61 +28,6 @@ void setup_styles() {
     lv_style_set_bg_color(&style_bar_press, lv_color_hex(0x00FFCC));
 }
 
-/*
-// --- DIBUJO DEL COCHE ---
-void draw_ui_elements(lv_obj_t * parent) {
-    // 1. Dibujar las 4 ruedas (Debajo del chasis)
-    // Posiciones relativas al centro
-    int wheel_w = 12;
-    int wheel_h = 25;
-    int x_offset = 32; 
-    int y_front = -35;
-    int y_back = 45;
-
-    lv_color_t wheel_color = lv_color_hex(0x111111); // Negro casi total
-
-    for(int i=0; i<4; i++) {
-        lv_obj_t * wheel = lv_obj_create(parent);
-        lv_obj_set_size(wheel, wheel_w, wheel_h);
-        lv_obj_set_style_bg_color(wheel, wheel_color, 0);
-        lv_obj_set_style_radius(wheel, 4, 0);
-        lv_obj_set_style_border_width(wheel, 0, 0);
-        lv_obj_clear_flag(wheel, LV_OBJ_FLAG_SCROLLABLE);
-        
-        // Posicionar cada rueda
-        if(i==0) lv_obj_align(wheel, LV_ALIGN_CENTER, -x_offset, y_front); // FL
-        if(i==1) lv_obj_align(wheel, LV_ALIGN_CENTER, x_offset, y_front);  // FR
-        if(i==2) lv_obj_align(wheel, LV_ALIGN_CENTER, -x_offset, y_back);  // RL
-        if(i==3) lv_obj_align(wheel, LV_ALIGN_CENTER, x_offset, y_back);   // RR
-    }
-
-    // 2. Chasis Principal (Cuerpo del coche)
-    lv_obj_t * body = lv_obj_create(parent);
-    lv_obj_set_size(body, 60, 140);
-    lv_obj_center(body);
-    lv_obj_set_style_bg_color(body, lv_color_hex(0x2D323E), 0); // Gris Azulado
-    lv_obj_set_style_radius(body, 20, 0); // Muy redondeado
-    lv_obj_set_style_border_width(body, 2, 0);
-    lv_obj_set_style_border_color(body, lv_color_hex(0x555555), 0);
-    lv_obj_clear_flag(body, LV_OBJ_FLAG_SCROLLABLE);
-
-    // 3. Cabina / Parabrisas (Para saber cual es el frente)
-    lv_obj_t * glass = lv_obj_create(body);
-    lv_obj_set_size(glass, 44, 35);
-    lv_obj_align(glass, LV_ALIGN_TOP_MID, 0, 25); // Hacia adelante
-    lv_obj_set_style_bg_color(glass, lv_color_hex(0x111111), 0); // Cristal oscuro
-    lv_obj_set_style_radius(glass, 8, 0);
-    lv_obj_set_style_border_width(glass, 0, 0);
-
-    // 4. Techo (Opcional, detalle estético)
-    lv_obj_t * roof = lv_obj_create(body);
-    lv_obj_set_size(roof, 44, 40);
-    lv_obj_align(roof, LV_ALIGN_BOTTOM_MID, 0, -15);
-    lv_obj_set_style_bg_color(roof, lv_color_hex(0x222630), 0); // Un poco mas oscuro que el chasis
-    lv_obj_set_style_radius(roof, 8, 0);
-    lv_obj_set_style_border_width(roof, 0, 0);
-}
-*/
 void create_tire_widget(int idx, const char* title, int x, int y) {
     // PANTALLA
     lv_obj_t * scr = lv_scr_act();
@@ -97,12 +43,14 @@ void create_tire_widget(int idx, const char* title, int x, int y) {
 
     // 1. Tarjeta principal - Un poco más alta para dar aire a los textos
     tires[idx].card = lv_obj_create(scr);
-    lv_obj_set_size(tires[idx].card, 200, 120); 
-    lv_obj_set_pos(tires[idx].card, x, y);
+    lv_obj_set_size(tires[idx].card, 201, 120); 
+    //lv_obj_set_pos(tires[idx].card, x, y);
     lv_obj_set_style_bg_color(tires[idx].card, lv_color_hex(0x111318), 0);
     lv_obj_set_style_border_color(tires[idx].card, lv_color_hex(0x222630), 0);
     lv_obj_set_style_radius(tires[idx].card, 10, 0);
     lv_obj_clear_flag(tires[idx].card, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_align(tires[idx].card, LV_ALIGN_CENTER, x, y);
+
 
     // 2. Etiqueta Posición
     lv_obj_t * l_pos = lv_label_create(tires[idx].card);
@@ -186,12 +134,12 @@ void setup() {
         // --- NUEVAS POSICIONES BASADAS EN TU FOTO ---
         // Separamos las tarjetas a los bordes (X) y las distribuimos en alto (Y)
         // Tarjetas Izquierdas (X=10)
-        create_tire_widget(0, "F-IZQUIERDA", 20, 35);   // Frontal Izquierda
-        create_tire_widget(2, "T-IZQUIERDA", 20, 170);  // Trasera Izquierda (Bajamos Y)
+        create_tire_widget(0, "F-IZQUIERDA", -120+5, -60);   // Frontal Izquierda
+        create_tire_widget(2, "T-IZQUIERDA", -120+5, 80);  // Trasera Izquierda (Bajamos Y)
 
         // Tarjetas Derechas (X=170 aprox para dejar el centro libre)
-        create_tire_widget(1, "F-DERECHA", 260, 35);  // Frontal Derecha
-        create_tire_widget(3, "T-DERECHA", 260, 170); // Trasera Derecha
+        create_tire_widget(1, "F-DERECHA", 120-5, -60);  // Frontal Derecha
+        create_tire_widget(3, "T-DERECHA", 120-5, 80); // Trasera Derecha
         
         // Nota: Si tu pantalla es más ancha, aumenta el 310 a 330 o 350.
 
